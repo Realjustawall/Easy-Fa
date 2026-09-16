@@ -1,0 +1,30 @@
+/* Easy-Fa: message typography only. Never changes chat-row flex/order. */
+[data-easyfa-message="1"], [data-easyfa-composer="1"], [data-easyfa-font-node="1"] {
+  font-family: var(--easyfa-font-family) !important;
+  font-size: var(--easyfa-font-size, inherit) !important;
+  font-weight: var(--easyfa-font-weight, inherit) !important;
+  line-height: var(--easyfa-line-height, normal) !important;
+  font-synthesis: none;
+  overflow-wrap: break-word;
+  word-break: normal;
+  white-space: pre-wrap;
+  max-width: 100%;
+  unicode-bidi: plaintext !important;
+}
+[data-easyfa-dir="smart"] { text-align: start !important; }
+[data-easyfa-dir="rtl"] { direction: rtl !important; text-align: right !important; }
+[data-easyfa-dir="ltr"] { direction: ltr !important; text-align: left !important; }
+[data-easyfa-message="1"] a,
+[data-easyfa-message="1"] code,
+[data-easyfa-message="1"] pre {
+  unicode-bidi: isolate;
+}
+
+/* Telegram Web K/A often assigns font-family on nested text spans.
+   Easy-Fa tags safe nested text nodes so the selected font wins without touching
+   usernames, timestamps, reactions, buttons or links. */
+[data-easyfa-message="1"] [data-easyfa-font-node="1"],
+[data-easyfa-composer="1"] *,
+[data-easyfa-composer="1"] [contenteditable] {
+  font-family: var(--easyfa-font-family, inherit) !important;
+}

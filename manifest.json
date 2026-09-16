@@ -1,0 +1,91 @@
+{
+  "manifest_version": 3,
+  "name": "Easy-Fa",
+  "version": "0.3.1",
+  "description": "Persian typography and safe mixed RTL/LTR for major chat apps plus user-defined custom sites.",
+  "permissions": [
+    "storage",
+    "scripting",
+    "fontSettings"
+  ],
+  "optional_host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ],
+  "host_permissions": [
+    "https://kick.com/*",
+    "https://www.kick.com/*",
+    "https://youtube.com/*",
+    "https://www.youtube.com/*",
+    "https://m.youtube.com/*",
+    "https://twitch.tv/*",
+    "https://www.twitch.tv/*",
+    "https://web.whatsapp.com/*",
+    "https://web.telegram.org/*",
+    "https://discord.com/*",
+    "https://www.discord.com/*",
+    "https://mail.google.com/*",
+    "https://cdn.jsdelivr.net/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "EASY-FA",
+    "default_icon": {
+      "16": "assets/icons/icon16.png",
+      "32": "assets/icons/icon32.png",
+      "48": "assets/icons/icon48.png",
+      "128": "assets/icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "32": "assets/icons/icon32.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  },
+  "options_page": "editor/index.html",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://kick.com/*",
+        "https://www.kick.com/*",
+        "https://youtube.com/*",
+        "https://www.youtube.com/*",
+        "https://m.youtube.com/*",
+        "https://twitch.tv/*",
+        "https://www.twitch.tv/*",
+        "https://web.whatsapp.com/*",
+        "https://web.telegram.org/*",
+        "https://discord.com/*",
+        "https://www.discord.com/*",
+        "https://mail.google.com/*"
+      ],
+      "all_frames": true,
+      "match_about_blank": true,
+      "run_at": "document_idle",
+      "css": [
+        "content/styles.css"
+      ],
+      "js": [
+        "shared/config.js",
+        "shared/storage.js",
+        "shared/font-loader.js",
+        "content/detector.js",
+        "content/content.js"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/fonts/*.woff2"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "version_name": "Alpha 0.3.1 Telegram Full Fix"
+}
