@@ -2,8 +2,16 @@
 'use strict';
 const E=globalThis.EasyFa=globalThis.EasyFa||{};
 const platforms={
-  kick:{name:'Kick',accent:'#53fc18'},youtube:{name:'YouTube',accent:'#ff0033'},youtubeLive:{name:'YouTube Live',accent:'#ff0033'},twitch:{name:'Twitch',accent:'#9147ff'},
-  whatsapp:{name:'WhatsApp Web',accent:'#25d366'},telegram:{name:'Telegram Web',accent:'#229ed9'},discord:{name:'Discord Web',accent:'#5865f2'},gmail:{name:'Gmail',accent:'#ea4335'}
+  kick:{name:'Kick',accent:'#53fc18'},
+  youtube:{name:'YouTube',accent:'#ff0033'},
+  youtubeLive:{name:'YouTube Live',accent:'#ff0033'},
+  twitch:{name:'Twitch',accent:'#9147ff'},
+  whatsapp:{name:'WhatsApp Web',accent:'#25d366'},
+  telegram:{name:'Telegram Web',accent:'#229ed9'},
+  discord:{name:'Discord Web',accent:'#5865f2'},
+  gmail:{name:'Gmail',accent:'#ea4335'},
+  chatgpt:{name:'ChatGPT',accent:'#10a37f'},
+  gemini:{name:'Gemini',accent:'#4285f4'}
 };
 const remote=(id,name,family,base,regular,bold=regular)=>({id,name,family,remote:true,recommended:true,files:{400:base+regular,700:base+bold}});
 const fonts=[
@@ -31,6 +39,32 @@ remote('gandom','Gandom','EasyFa Gandom','https://cdn.jsdelivr.net/gh/rastikerda
 {id:'b-yekan',name:'B Yekan (Local)',local:true,family:'"B Yekan"'},
 {id:'iran-nastaliq',name:'IranNastaliq (Local)',local:true,family:'IranNastaliq'}
 ];
-const base=p=>({enabled:true,direction:'smart',fontId:'vazirmatn',fontScope:'fa',sizeScope:'fa',fontSize:16,fontWeight:500,lineHeight:1.75,composer:['whatsapp','telegram','discord'].includes(p),accent:platforms[p]?.accent||'#22c55e'});
-E.Config=Object.freeze({KEY:'easyFaV10',VERSION:10.31,ARABIC_RANGE:'U+0600-06FF,U+0750-077F,U+0870-089F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFF',platforms,fonts,base,defaults:{version:10.31,active:'kick',profiles:Object.fromEntries(Object.keys(platforms).map(p=>[p,base(p)])),customSites:[]}});
+const base=p=>({
+  enabled:true,
+  direction:'smart',
+  fontId:'vazirmatn',
+  fontScope:'fa',
+  sizeScope:'fa',
+  fontSize:16,
+  fontWeight:500,
+  lineHeight:1.75,
+  composer:['whatsapp','telegram','discord','chatgpt','gemini'].includes(p),
+  sidebar:p==='telegram',
+  accent:platforms[p]?.accent||'#22c55e'
+});
+E.Config=Object.freeze({
+  KEY:'easyFaV10',
+  VERSION:11,
+  ARABIC_RANGE:'U+0600-06FF,U+0750-077F,U+0870-089F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFF',
+  platforms,
+  fonts,
+  base,
+  defaults:{
+    version:11,
+    active:'kick',
+    uiTheme:'dark',
+    profiles:Object.fromEntries(Object.keys(platforms).map(p=>[p,base(p)])),
+    customSites:[]
+  }
+});
 })();

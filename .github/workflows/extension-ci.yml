@@ -1,0 +1,70 @@
+name: Easy-Fa Extension CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check background.js
+          node --check shared/config.js
+          node --check shared/storage.js
+          node --check shared/font-loader.js
+          node --check content/detector.js
+          node --check content/content.js
+          node --check editor/editor.js
+
+      - name: Validate manifest and required fixes
+        shell: python
+        run: |
+          import json, pathlib
+          root = pathlib.Path(".")
+          manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
+          assert manifest["version"] == "0.4.0"
+          matches = set(manifest["content_scripts"][0]["matches"])
+          assert "https://chatgpt.com/*" in matches
+          assert "https://gemini.google.com/*" in matches
+          assert manifest["content_scripts"][0]["run_at"] == "document_start"
+          detector = (root / "content/detector.js").read_text(encoding="utf-8")
+          content = (root / "content/content.js").read_text(encoding="utf-8")
+          editor = (root / "editor/index.html").read_text(encoding="utf-8")
+          css = (root / "editor/editor.css").read_text(encoding="utf-8")
+          for needle in [".ytp-caption-segment", "chatgpt", "gemini", "sidebars", ".chatlist .ListItem .title"]:
+              assert needle in detector, needle
+          assert "easyfa-stable-style" in content
+          assert "MutationObserver" in content
+          assert 'id="sidebar"' in editor
+          assert 'id="themeToggle"' in editor
+          assert 'data-theme="light"' in css
+
+      - name: Package extension
+        run: |
+          zip -r Easy-Fa-0.4.0.zip \
+            assets content editor shared background.js manifest.json README.md Policy-WebC \
+            -x "*.DS_Store" "*/__pycache__/*"
+
+      - name: Inspect package
+        run: |
+          unzip -t Easy-Fa-0.4.0.zip
+          ls -lh Easy-Fa-0.4.0.zip
+
+      - name: Upload extension package
+        uses: actions/upload-artifact@v4
+        with:
+          name: Easy-Fa-0.4.0
+          path: Easy-Fa-0.4.0.zip
+          if-no-files-found: error
+          retention-days: 30
