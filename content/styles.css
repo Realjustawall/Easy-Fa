@@ -1,22 +1,139 @@
-/* Easy-Fa typography layer. It deliberately avoids layout/width/white-space rules. */
+/* Easy-Fa changes only font + bidi presentation. It must never rewrite the
+   site's DOM, Markdown structure, whitespace, list layout, margins or display. */
 [data-easyfa-message="1"],
 [data-easyfa-composer="1"],
-[data-easyfa-font-node="1"],
-[data-easyfa-sidebar="1"] {
+[data-easyfa-sidebar="1"],
+[data-easyfa-font-node="1"] {
   font-family: var(--easyfa-font-family) !important;
-  font-size: var(--easyfa-font-size, inherit) !important;
-  font-weight: var(--easyfa-font-weight, inherit) !important;
-  line-height: var(--easyfa-line-height, normal) !important;
-  font-synthesis: none;
 }
-[data-easyfa-dir="smart"] { text-align: start !important; unicode-bidi: plaintext !important; }
-[data-easyfa-dir="rtl"] { direction: rtl !important; text-align: right !important; unicode-bidi: plaintext !important; }
-[data-easyfa-dir="ltr"] { direction: ltr !important; text-align: left !important; unicode-bidi: plaintext !important; }
+
+/* Size/weight/line-height are opt-in. Previously these declarations existed
+   with fallback values + !important, which unintentionally flattened headings,
+   bold text and line boxes even when the user had chosen Persian-only sizing. */
+[data-easyfa-metrics="full"] {
+  font-size: var(--easyfa-font-size) !important;
+  font-weight: var(--easyfa-font-weight) !important;
+  line-height: var(--easyfa-line-height) !important;
+}
+[data-easyfa-metrics="rich"] {
+  font-size: var(--easyfa-font-size) !important;
+  font-weight: var(--easyfa-font-weight) !important;
+  /* Keep the host app's line-height for Markdown / rich content. */
+}
+
+/* Smart direction is paragraph-aware. `dir=auto` is applied by JS to the rich
+   block nodes themselves (p/li/headings/lists), so bullets/numbers/headings move
+   to the correct side without touching their HTML or inserting whitespace. */
+[data-easyfa-dir="smart"],
+[data-easyfa-block-dir="smart"] {
+  text-align: start !important;
+  unicode-bidi: plaintext !important;
+}
+[data-easyfa-dir="rtl"] {
+  direction: rtl !important;
+  text-align: right !important;
+  unicode-bidi: isolate !important;
+}
+[data-easyfa-dir="ltr"] {
+  direction: ltr !important;
+  text-align: left !important;
+  unicode-bidi: isolate !important;
+}
+
+/* Explicit RTL/LTR must propagate to rich blocks, but does not change display,
+   padding, margins, list-style, whitespace or text content. */
+[data-easyfa-message="1"][data-easyfa-dir="rtl"] :is(p,li,blockquote,h1,h2,h3,h4,h5,h6,figcaption,dd,dt,summary),
+[data-easyfa-composer="1"][data-easyfa-dir="rtl"] :is(p,li,blockquote,h1,h2,h3,h4,h5,h6,[data-lexical-text="true"],[data-block="true"],[data-contents="true"] > div) {
+  direction: rtl !important;
+  text-align: right !important;
+  unicode-bidi: isolate !important;
+}
+[data-easyfa-message="1"][data-easyfa-dir="ltr"] :is(p,li,blockquote,h1,h2,h3,h4,h5,h6,figcaption,dd,dt,summary),
+[data-easyfa-composer="1"][data-easyfa-dir="ltr"] :is(p,li,blockquote,h1,h2,h3,h4,h5,h6,[data-lexical-text="true"],[data-block="true"],[data-contents="true"] > div) {
+  direction: ltr !important;
+  text-align: left !important;
+  unicode-bidi: isolate !important;
+}
+
+/* Composer placeholder/caret alignment. No white-space/letter-spacing override:
+   those properties belong to ProseMirror/Quill/Lexical/Slate and changing them
+   creates visual gaps. */
+[data-easyfa-composer="1"][data-easyfa-dir="rtl"]::placeholder,
+[data-easyfa-composer="1"][data-easyfa-dir="rtl"] [data-placeholder],
+[data-easyfa-composer="1"][data-easyfa-dir="rtl"] [data-placeholder]::before {
+  text-align: right !important;
+  direction: rtl !important;
+}
+[data-easyfa-composer="1"][data-easyfa-dir="ltr"]::placeholder,
+[data-easyfa-composer="1"][data-easyfa-dir="ltr"] [data-placeholder],
+[data-easyfa-composer="1"][data-easyfa-dir="ltr"] [data-placeholder]::before {
+  text-align: left !important;
+  direction: ltr !important;
+}
+[data-easyfa-composer="1"][data-easyfa-dir="smart"]::placeholder {
+  text-align: start !important;
+}
+
+/* Nested editor nodes may set their own font. Font only; never weight/spacing. */
+[data-easyfa-composer="1"] *,
+[data-easyfa-composer="1"] [contenteditable] {
+  font-family: var(--easyfa-font-family, inherit) !important;
+}
+
+/* Semantic emphasis is intentionally not overridden. Native/site rules for
+   strong/b/headings keep their exact weight and hierarchy. */
+
+/* Code and URLs stay isolated/LTR inside mixed Persian content. */
 [data-easyfa-message="1"] a,
 [data-easyfa-message="1"] code,
 [data-easyfa-message="1"] pre,
-[data-easyfa-sidebar="1"] a { unicode-bidi: isolate; }
-[data-easyfa-message="1"] [data-easyfa-font-node="1"],
-[data-easyfa-composer="1"] *,
-[data-easyfa-composer="1"] [contenteditable] { font-family: var(--easyfa-font-family, inherit) !important; }
-html[data-easyfa-platform="telegram"],html[data-easyfa-platform="chatgpt"],html[data-easyfa-platform="gemini"] { --easyfa-ready: 1; }
+[data-easyfa-message="1"] kbd,
+[data-easyfa-message="1"] samp {
+  unicode-bidi: isolate !important;
+}
+[data-easyfa-message="1"] code,
+[data-easyfa-message="1"] pre,
+[data-easyfa-message="1"] kbd,
+[data-easyfa-message="1"] samp {
+  direction: ltr;
+  text-align: left;
+}
+
+/* YouTube's attributed-string layers can force Roboto. Override font only. */
+[data-easyfa-platform="youtube"][data-easyfa-message="1"] :is(
+  yt-formatted-string,
+  yt-attributed-string,
+  .yt-core-attributed-string,
+  .yt-core-attributed-string span
+) {
+  font-family: var(--easyfa-font-family, inherit) !important;
+}
+[data-easyfa-platform="youtube"][data-easyfa-message="1"].ytp-caption-segment,
+.ytp-caption-segment[data-easyfa-message="1"] {
+  font-family: var(--easyfa-font-family, inherit) !important;
+}
+
+/* AI rich responses: only font inheritance. Heading sizes, bold, bullets,
+   numbered lists, HRs, blockquote spacing and Markdown margins stay native. */
+:is(
+  [data-easyfa-platform="chatgpt"],
+  [data-easyfa-platform="gemini"],
+  [data-easyfa-platform="claude"],
+  [data-easyfa-platform="claudeCode"]
+)[data-easyfa-message="1"] :is(p,li,blockquote,h1,h2,h3,h4,h5,h6,span) {
+  font-family: var(--easyfa-font-family, inherit) !important;
+}
+
+/* Telegram Web assigns font-family on nested spans. */
+[data-easyfa-message="1"] [data-easyfa-font-node="1"] {
+  font-family: var(--easyfa-font-family, inherit) !important;
+}
+
+
+/* ChatGPT history titles are opt-in and isolated from the sidebar controls. */
+[data-easyfa-sidebar="1"] {
+  font-family: var(--easyfa-font-family, inherit) !important;
+}
+[data-easyfa-sidebar="1"][data-easyfa-dir="smart"] { text-align:start !important; unicode-bidi:plaintext !important; }
+[data-easyfa-sidebar="1"][data-easyfa-dir="rtl"] { direction:rtl !important; text-align:right !important; unicode-bidi:isolate !important; }
+[data-easyfa-sidebar="1"][data-easyfa-dir="ltr"] { direction:ltr !important; text-align:left !important; unicode-bidi:isolate !important; }

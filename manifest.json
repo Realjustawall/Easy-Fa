@@ -1,9 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Easy-Fa",
-  "version": "0.4.0",
-  "version_name": "Beta 0.4.0 Stability + ChatGPT/Gemini",
-  "description": "Stable Persian typography for YouTube captions, ChatGPT, Gemini, Telegram and major chat apps, with mixed RTL/LTR support.",
+  "version": "0.4.6",
+  "description": "Persian typography, stable mixed RTL/LTR, dynamic YouTube captions, AI chat support and per-site controls.",
   "permissions": [
     "storage",
     "scripting",
@@ -26,10 +25,13 @@
     "https://discord.com/*",
     "https://www.discord.com/*",
     "https://mail.google.com/*",
+    "https://cdn.jsdelivr.net/*",
     "https://chatgpt.com/*",
+    "https://www.chatgpt.com/*",
     "https://chat.openai.com/*",
     "https://gemini.google.com/*",
-    "https://cdn.jsdelivr.net/*"
+    "https://claude.ai/*",
+    "https://www.claude.ai/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -66,8 +68,11 @@
         "https://www.discord.com/*",
         "https://mail.google.com/*",
         "https://chatgpt.com/*",
+        "https://www.chatgpt.com/*",
         "https://chat.openai.com/*",
-        "https://gemini.google.com/*"
+        "https://gemini.google.com/*",
+        "https://claude.ai/*",
+        "https://www.claude.ai/*"
       ],
       "all_frames": true,
       "match_about_blank": true,
@@ -87,12 +92,12 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "assets/fonts/*.woff2",
-        "assets/fonts/*.woff"
+        "assets/fonts/*.woff2"
       ],
       "matches": [
         "<all_urls>"
       ]
     }
-  ]
+  ],
+  "version_name": "Alpha 0.4.6 Live Chat + Instant Apply"
 }

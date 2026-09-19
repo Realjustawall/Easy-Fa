@@ -9,9 +9,11 @@ const platforms={
   whatsapp:{name:'WhatsApp Web',accent:'#25d366'},
   telegram:{name:'Telegram Web',accent:'#229ed9'},
   discord:{name:'Discord Web',accent:'#5865f2'},
-  gmail:{name:'Gmail',accent:'#ea4335'},
   chatgpt:{name:'ChatGPT',accent:'#10a37f'},
-  gemini:{name:'Gemini',accent:'#4285f4'}
+  gemini:{name:'Gemini',accent:'#4e82ee'},
+  claude:{name:'Claude Chat',accent:'#d97757'},
+  claudeCode:{name:'Claude Code',accent:'#d97757'},
+  gmail:{name:'Gmail',accent:'#ea4335'}
 };
 const remote=(id,name,family,base,regular,bold=regular)=>({id,name,family,remote:true,recommended:true,files:{400:base+regular,700:base+bold}});
 const fonts=[
@@ -39,6 +41,7 @@ remote('gandom','Gandom','EasyFa Gandom','https://cdn.jsdelivr.net/gh/rastikerda
 {id:'b-yekan',name:'B Yekan (Local)',local:true,family:'"B Yekan"'},
 {id:'iran-nastaliq',name:'IranNastaliq (Local)',local:true,family:'IranNastaliq'}
 ];
+const youtubeTargets=()=>({title:true,description:true,comments:true,home:true,subtitles:true});
 const base=p=>({
   enabled:true,
   direction:'smart',
@@ -48,23 +51,17 @@ const base=p=>({
   fontSize:16,
   fontWeight:500,
   lineHeight:1.75,
-  composer:['whatsapp','telegram','discord','chatgpt','gemini'].includes(p),
-  sidebar:p==='telegram',
-  accent:platforms[p]?.accent||'#22c55e'
+  composer:['whatsapp','telegram','discord','youtube','chatgpt','gemini','claude','claudeCode'].includes(p),
+  accent:platforms[p]?.accent||'#22c55e',
+  ...(p==='youtube'?{targets:youtubeTargets()}:{}),
+  ...(p==='chatgpt'?{sidebar:true}:{}),
+  ...(p==='custom'?{customMode:'smart',messageSelector:'',composerSelector:''}:{})
 });
 E.Config=Object.freeze({
   KEY:'easyFaV10',
-  VERSION:11,
+  VERSION:10.91,
   ARABIC_RANGE:'U+0600-06FF,U+0750-077F,U+0870-089F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFF',
-  platforms,
-  fonts,
-  base,
-  defaults:{
-    version:11,
-    active:'kick',
-    uiTheme:'dark',
-    profiles:Object.fromEntries(Object.keys(platforms).map(p=>[p,base(p)])),
-    customSites:[]
-  }
+  platforms,fonts,base,youtubeTargets,
+  defaults:{version:10.91,theme:'dark',applyMode:'instant',active:'kick',profiles:Object.fromEntries(Object.keys(platforms).map(p=>[p,base(p)])),customSites:[]}
 });
 })();
