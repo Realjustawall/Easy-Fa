@@ -137,3 +137,10 @@
 [data-easyfa-sidebar="1"][data-easyfa-dir="smart"] { text-align:start !important; unicode-bidi:plaintext !important; }
 [data-easyfa-sidebar="1"][data-easyfa-dir="rtl"] { direction:rtl !important; text-align:right !important; unicode-bidi:isolate !important; }
 [data-easyfa-sidebar="1"][data-easyfa-dir="ltr"] { direction:ltr !important; text-align:left !important; unicode-bidi:isolate !important; }
+
+/* GitHub prose/comments can set fonts on nested spans. Keep code blocks and
+   source viewers untouched while applying the selected Persian font exactly to
+   readable prose descendants. */
+[data-easyfa-platform="github"][data-easyfa-message="1"] :is(p,li,blockquote,h1,h2,h3,h4,h5,h6,span,a,td,th):not(:where(pre *,code *,kbd *,samp *,.blob-code *,.react-code-lines *,.js-file-line *)) {
+  font-family: var(--easyfa-font-family, inherit) !important;
+}

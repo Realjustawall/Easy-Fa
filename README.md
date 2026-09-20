@@ -1,176 +1,327 @@
 # Easy-Fa
 
-Easy-Fa is a Chrome Manifest V3 extension for Persian typography, safe mixed RTL/LTR rendering, per-site font controls, composer styling, and user-defined Custom Sites.
+Easy-Fa is a Chrome Manifest V3 extension focused on Persian typography, mixed RTL/LTR rendering, per-site font controls, dynamic chat/content detection, and safe font application across supported websites.
 
 **Created by JustAWall**
 
-## Version 0.4.6
+## Current version
 
-### 0.4.6 live chat restoration / instant apply
+- Extension version: **0.5.3**
+- Easy-Fa config version: **12.0**
+- Manifest: **V3**
+- Package label: **Alpha 0.5.3 Redesigned Settings + Global Profiles**
 
-- Kick, Twitch and YouTube Live message text has been rebuilt from the original 0.3.1 chat detection paths, while keeping the newer bounded incremental observer architecture.
-- Kick supports both the original message-content selectors and current keyed message rows (`data-index`, `data-message-id`, `data-chat-entry`) inside the chat container.
-- Twitch targets `chat-line-message-body` and nested `.text-fragment` text so host-level nested font rules cannot hide the selected font.
-- YouTube Live applies typography to `#message` and safe nested text leaves for every new live-chat message.
-- Usernames, badges, timestamps, links and chat action buttons remain protected from message-text targeting.
-- Added a global **Apply timing** setting: **Instant** (default) or **Delayed** (~180 ms batching). The setting applies to every supported site.
-- Instant mode uses a microtask for newly-added nodes rather than a visible animation-frame/debounce delay.
-- Chat root replacement/remount is detected by a narrow parent observer, so SPA/popout chat remounts do not wait for the periodic repair sweep.
+## What is new in 0.5.3
 
-### 0.4.5 legacy site recovery / Shorts
+### Redesigned Sites workspace
 
-- Rebuilt Telegram, Kick, Twitch, WhatsApp, Discord and YouTube Live handling from the original 0.3.1 detection behavior that was known to work.
-- Fixed iframe/about:blank support that had accidentally been disabled by later performance changes.
-- Fixed a core incremental-scan bug that skipped a newly inserted node when that node itself matched the message/subtitle selector.
-- Telegram now re-applies nested message spans after edits/dynamic rendering.
-- Chat roots are automatically rediscovered after SPA remounts without watching the whole document, while new messages are processed incrementally.
-- Added YouTube Shorts active overlay/title coverage and current Shorts card-title selectors.
-- Dynamic YouTube subtitle segments are applied after every caption replacement.
-- Gemini user-query text now targets the actual query leaf while response Markdown remains structure-safe.
+The built-in Sites section now uses a dedicated two-column workspace:
 
-### 0.4.4 dynamic rendering / font persistence
+- Supported sites are shown as a **vertical rail on the left**.
+- The selected site's settings open in a separate panel on the right.
+- Every site shows its current enabled/disabled status directly in the rail.
+- Long labels, URLs, selectors, controls, cards, and responsive layouts are constrained so they do not overflow the settings container.
+- On narrow windows the layout collapses safely instead of forcing horizontal overflow.
+- Site state in the rail updates immediately when a site is enabled or disabled.
 
-- Fixed YouTube title text growing unexpectedly when virtualized video-card nodes are reused during scrolling. Persian-only `size-adjust` is now profile-stable instead of being tied to a recycled element's previous computed size.
-- YouTube title/card nodes are re-synchronized when YouTube reuses an already-managed DOM node with new text.
-- YouTube captions/subtitles are repaired across caption changes and player inline-style rewrites instead of only styling the first caption segment.
-- Added a lightweight managed-node health check that restores the selected font if a site overwrites Easy-Fa's inline font variables. It only scans Easy-Fa-managed nodes, not the full page.
-- Gemini selectors now cover current `user-query-content`, `model-response`, `message-content`, `.markdown-main-panel`, and Quill/rich-textarea composer variants.
-- ChatGPT gained an independent **Conversation history / Sidebar** option. Sidebar observation is isolated from the main conversation observer.
-- Added Dark / Light theme switching to the Easy-Fa settings UI.
-- YouTube overlapping title selectors are pruned to the deepest text target to avoid double-applying typography to parent + child layers.
+### Conditional “Restore font application” context-menu item
 
-### 0.4.3 performance / ChatGPT stability
+The Smart Font Builder context menu now behaves contextually:
 
-- MutationObserver is now attached only to the active chat/content root instead of the whole document.
-- No per-keystroke rescans: managed composers inherit font + bidi state without running detection on every input event.
-- Streaming AI responses update only newly-added rich blocks; the whole response/conversation is not rescanned for each token.
-- Known AI sites no longer use a document-wide TreeWalker fallback. Generic fallback is bounded to semantic text blocks.
-- Managed-node bookkeeping uses WeakMap so removed/old chat nodes are not kept alive by the extension.
-- Built-in subframes are ignored except YouTube Live Chat; custom-site scripts are registered top-frame only.
-- Direction is applied immediately and no longer waits for remote font loading.
-- Selector queries are combined to reduce repeated querySelectorAll calls.
+- **Apply font to this site** is available when no Smart Site rule exists for the current host.
+- **Apply font to this page** is available when no Smart Page rule exists for the exact current URL.
+- **Restore font application** is hidden by default and becomes visible only when a Smart Site or Smart Page rule is actually active for the current URL.
+- Browsers that do not support dynamic context-menu visibility keep the restore item hidden instead of showing a misleading action.
 
+## Major features added in 0.5.x
 
-This build makes Smart RTL structure-safe for rich Markdown/chat content and fixes the two main causes of artificial spacing and lost bold emphasis. It keeps the YouTube/Claude Code coverage from 0.4.1.
+### Google Search support
 
+Easy-Fa includes a dedicated **Google Search** profile for `google.com` and `www.google.com`.
 
-### Structure-safe Smart RTL and spacing fix
+The profile is designed to style visible search-result content while avoiding navigation and form controls. It covers common result surfaces such as:
 
-- Smart mode now assigns `dir="auto"` per paragraph, heading, list and list item inside rich messages. Persian and English blocks can therefore choose their own side without rewriting the message HTML.
-- Explicit rich containers such as `.markdown` and `.prose` are preserved instead of being replaced by fallback leaf nodes.
-- Easy-Fa no longer forces fallback `font-size`, `font-weight`, `line-height`, whitespace, letter-spacing or word-spacing values when those controls are not supposed to apply.
-- Rich AI/Markdown content preserves the host site's line-height, margins, heading hierarchy, horizontal rules, bullets and numbered lists.
-- Font faces are registered with real weight metadata. Regular/Medium/Bold are no longer advertised as one fake `100-900` face, so semantic `<strong>`/`<b>` and headings remain visibly bold.
-- Streaming messages and dynamically created composer paragraphs are re-synchronized only inside their existing rich container, keeping Smart RTL correct without a full-page scan.
+- Search result titles
+- Result snippets and descriptions
+- Supporting result text
+- Selected knowledge/result panel text
 
-### YouTube
+Google Search defaults to applying the selected font to both Persian and Latin text (`fontScope: all`) so result typography remains visually consistent when mixed-language results are displayed.
 
-The YouTube profile can now independently enable or disable:
+### GitHub support
 
-- Video title on the watch page
-- Video description
-- Comments and replies
-- Video titles on Home, Search, recommendations, and compact lists
-- YouTube player subtitles/captions (font, size/weight scope, and direction)
+Easy-Fa includes a dedicated **GitHub** profile for `github.com` and `www.github.com`.
 
-YouTube comment editors are also detected. The existing **Apply to typing/composer** switch controls whether Easy-Fa styles the comment box while the user is typing.
+It targets user-facing prose while protecting code-oriented surfaces. Supported content includes:
 
-### Discord
+- README and Markdown content
+- Issue bodies
+- Issue comments and discussion text
+- Issue titles
+- Repository descriptions
+- GitHub text editors/comment composers when composer styling is enabled
 
-Discord composer detection now includes Slate, Lexical, generic `role="textbox"`, and `aria-multiline` contenteditable variants. Composer detection is also checked directly on focus/input so a late-mounted editor does not require a full-page rescan.
+Code-related content is intentionally protected. Easy-Fa excludes common code surfaces such as `pre`, `code`, `kbd`, `samp`, diff/blob lines, and React code-line containers so monospace/code formatting is preserved.
 
-### Performance
+### Smart Font Builder
 
-The previous content script could rescan a large page after almost every DOM/text mutation. This build changes that behavior:
+The settings UI has a dedicated **Smart Font Builder** section. It can be enabled or disabled independently.
 
-- MutationObserver reacts only to added DOM nodes, not every character-data update.
-- Newly added subtrees are scanned incrementally.
-- Already-styled elements are skipped using a WeakMap marker.
-- Full scans are reserved for initial load, settings changes, visibility/navigation events, and YouTube SPA navigation.
-- Composer focus/input is handled directly instead of triggering a page scan on every keystroke.
-- Custom-site registered content scripts are no longer unregistered/re-registered when their host match list has not changed.
-- Detached styled elements are periodically cleaned from the tracking map.
+When enabled, Easy-Fa adds an **Easy-fa** entry to the browser right-click menu with rule-based actions:
 
-### ChatGPT, Gemini, Claude, Claude Code
+- **اعمال فونت به این سایت** — apply the Smart default profile to the current domain.
+- **اعمال فونت به این صفحه** — apply the Smart default profile only to the exact current page URL.
+- **بازگردانی اعمال فونت** — remove the active Smart rule for the current URL; this item is only shown when a matching rule exists.
 
-Built-in profiles were added for:
+Smart Site and Smart Page rules are stored separately. A page-specific rule therefore does not automatically affect every other page on the same domain.
 
-- ChatGPT (`chatgpt.com`, legacy `chat.openai.com`)
-- Gemini (`gemini.google.com`)
-- Claude Chat (`claude.ai`)
-- Claude Code web (`claude.ai/code`)
+For non-built-in domains, Easy-Fa requests only the host permission required for that domain. Dynamic content scripts are registered only for approved custom/Smart hosts.
 
-Each site has its own independent typography settings. The **Apply to typing/composer** option can be enabled for the prompt box or disabled to style only conversation text. Rich editors now apply direction/alignment to the editable root and generated paragraph blocks, including ProseMirror, Quill, Lexical, and Slate.
+### Smart defaults and active rules
 
-Selectors use stable semantic/data attributes where possible, with fallback patterns for recent UI variations.
+Smart rules inherit a dedicated default profile. From the Smart Font Builder you can:
 
-### Custom Sites
+- Choose the default font
+- Set direction behavior
+- Choose Persian-only or Persian + English font scope
+- Set font size scope
+- Set font size
+- Set font weight
+- Set line height
+- Enable or disable composer/input styling
+- Copy the current **Global Settings** profile into Smart defaults
+- Apply Smart defaults to already-active Smart Site and Smart Page rules
+- View active Smart rules
+- Remove active Smart rules
 
-Custom Sites are stronger in 0.4.0:
+### Global Settings
 
-- Smart auto-detection for Persian/message-like content
-- Broad content mode for pages where the smart mode is too restrictive
-- Optional exact CSS selector for message/text content
-- Optional exact CSS selector for the typing/composer element
-- Generic support for textarea and contenteditable composers
-- Optional host permissions remain scoped to domains approved by the user
+Easy-Fa 0.5.x adds a real **Global Preset** instead of only per-site controls.
 
-If an exact selector is supplied, it takes priority over generic detection.
+Global Settings can be edited once and selectively applied to:
 
-### Kick spacing fix
+- Built-in supported sites
+- Custom Sites
+- Smart Site / Smart Page rules
 
-Easy-Fa no longer forces `white-space: pre-wrap` onto every detected message. That rule could expose framework-generated whitespace between inline nodes and create artificial gaps on Kick and rich editors. Easy-Fa now leaves the site's whitespace, letter-spacing and word-spacing model untouched instead of overriding those properties.
+The global preset includes the shared typography properties used across profiles. Applying it preserves site-specific behavior such as YouTube target toggles, ChatGPT sidebar settings, and Custom Site selector/detection settings.
+
+### Dedicated Custom Sites section
+
+Custom Sites are now managed in their own section instead of being mixed into the built-in Sites list.
+
+A Custom Site can define:
+
+- Domain / host
+- Display name
+- Smart or broad content detection
+- Exact message/content CSS selector
+- Exact composer/input CSS selector
+- Typography profile
+- Optional composer styling
+
+New Custom Sites inherit the current Global Preset. Host permissions remain scoped to domains the user explicitly approves.
+
+### Settings UI redesign
+
+The options page is separated into four clear workspaces:
+
+1. **Sites** — built-in service-specific controls
+2. **Global Settings** — shared preset and bulk application
+3. **Smart Font Builder** — right-click rules, defaults, and active rules
+4. **Custom Sites** — manually managed domains and selectors
+
+The interface includes responsive cards, status indicators, counters, Dark/Light themes, improved spacing, long-text handling, and overflow-safe layouts.
+
+### Service Worker reliability
+
+The Manifest V3 background worker now feature-detects optional Chromium extension APIs before registering event listeners. This prevents the whole Service Worker from failing to register on Chromium-based browsers that expose only part of the expected API surface.
+
+Context-menu actions use the event's `pageUrl` when available, which improves reliability when applying Smart rules before an optional host permission has already been granted.
 
 ## Supported built-in sites
 
-- Kick
-- YouTube
-- YouTube Live
-- Twitch
-- WhatsApp Web
-- Telegram Web
-- Discord Web
-- ChatGPT
-- Gemini
-- Claude Chat
-- Claude Code
-- Gmail
-- Custom Sites
+- **Kick**
+- **YouTube**
+- **YouTube Live**
+- **Twitch**
+- **WhatsApp Web**
+- **Telegram Web**
+- **Discord Web**
+- **ChatGPT**
+- **Gemini**
+- **Claude Chat**
+- **Claude Code**
+- **Gmail**
+- **Google Search**
+- **GitHub**
 
-## Main features
+In addition, Easy-Fa supports user-defined **Custom Sites** and Smart right-click rules for approved HTTP/HTTPS domains.
 
-- Smart Persian RTL using `dir="auto"` and `unicode-bidi: plaintext`; explicit RTL/LTR uses isolated bidi so the chosen direction is not overridden by the first character
-- Persian-only font mode or Persian + English font mode
-- Independent size, weight, line-height, direction, and composer setting per site
-- Message-body styling isolated from usernames, badges, timestamps, avatars, and controls where possible
-- Bundled Persian/Arabic fonts plus configured web fonts
-- Installed operating-system font discovery through Chrome `fontSettings`
-- No `eval`
-- Lightweight managed-node health polling only; no full-page polling loop
+## Core typography controls
 
-## Install locally in Chrome
+Each profile can use independent typography settings, including:
 
-1. Extract the ZIP file.
-2. Open `chrome://extensions`.
-3. Enable **Developer mode**.
-4. Click **Load unpacked**.
-5. Select the folder containing `manifest.json`.
-6. If an older Easy-Fa build is already loaded, click **Reload** on its extension card.
-7. Reload already-open supported tabs once.
-8. Click the Easy-Fa toolbar icon to open Easy-Fa Studio.
+- Enable / disable profile
+- Direction: Smart, RTL, LTR, or site/default behavior where supported
+- Font selection
+- Font scope: Persian-only or Persian + English
+- Font-size scope
+- Font size
+- Font weight
+- Line height
+- Apply to typing/composer
 
-## Custom Sites
+Smart Persian direction uses structure-safe bidi handling so mixed Persian/English content can preserve the host page's semantic structure.
 
-1. Open Easy-Fa Studio.
-2. Add a domain such as `example.com` and approve the domain permission.
-3. Select the newly-created Custom Site tab.
-4. Choose Smart or Broad detection.
-5. If the site has unusual markup, enter an exact CSS selector for messages and/or the composer.
-6. Enable **Apply to typing/composer** if the typing area should also use Easy-Fa.
+## Fonts
+
+Easy-Fa supports multiple font sources:
+
+### Bundled fonts
+
+The package includes several Persian/Arabic-compatible families, including:
+
+- Noto Sans Arabic
+- Noto Naskh Arabic
+- Noto Kufi Arabic
+- Noto Sans Arabic UI
+- Noto Naskh Arabic UI
+- Noto Nastaliq Urdu
+- Amiri
+- DejaVu Sans
+- FreeSans / FreeSerif / FreeMono
+- Inter
+
+### Configured web fonts
+
+Easy-Fa can load configured webfont families such as:
+
+- Vazirmatn
+- Shabnam
+- Sahel
+- Samim
+- Parastoo
+- Tanha
+- Gandom
+
+### Installed system fonts
+
+Chrome's `fontSettings` permission is used for installed-font discovery where supported.
+
+## YouTube controls
+
+The YouTube profile can independently control typography for:
+
+- Watch-page video title
+- Video description
+- Comments and replies
+- Home/Search/recommendation/compact video titles
+- Player subtitles/captions
+
+YouTube Shorts title surfaces and dynamic subtitle segments are also handled. YouTube Live uses dedicated chat-message targeting so usernames, badges, timestamps, links, and controls are not treated as message text.
+
+## Chat and AI sites
+
+### ChatGPT
+
+- Conversation/message text
+- Rich Markdown-safe handling
+- Optional prompt/composer styling
+- Independent conversation-history/sidebar option
+
+### Gemini
+
+- User-query text
+- Model response/Markdown content
+- Current rich editor/composer variants
+
+### Claude / Claude Code
+
+- Rich conversation text
+- Composer handling
+- Structure-safe Markdown processing
+
+### Discord / Telegram / WhatsApp / Kick / Twitch / YouTube Live
+
+Easy-Fa uses site-specific message roots and incremental DOM handling rather than repeatedly scanning the full document. Message content is targeted while common metadata/controls are protected where possible.
+
+## Dynamic-page and performance behavior
+
+Easy-Fa is designed for modern SPA/chat interfaces:
+
+- Mutation observers are scoped to active content/chat roots where possible.
+- Newly inserted subtrees are processed incrementally.
+- Managed nodes are tracked without retaining removed DOM nodes unnecessarily.
+- Composer focus/input is handled directly instead of triggering a full-page scan on every keystroke.
+- Dynamic chat/content roots can be rediscovered after SPA remounts.
+- Managed font state can be repaired when a host page overwrites Easy-Fa styling.
+- YouTube SPA navigation and dynamic caption replacement are handled explicitly.
+- Smart Page rules are re-evaluated against the current URL so a page-specific rule does not leak into a different SPA route.
+
+## Smart RTL and rich content safety
+
+Easy-Fa avoids flattening rich content. For supported rich-message surfaces it preserves structures such as:
+
+- Paragraphs
+- Headings
+- Lists and list items
+- Blockquotes
+- Markdown containers
+- Bold/strong emphasis
+- Host spacing and hierarchy
+
+Code blocks on GitHub and other protected code surfaces are not converted to Persian UI fonts.
+
+## Install locally in Chrome / Chromium
+
+1. Download or clone the repository.
+2. If using a ZIP, extract it.
+3. Open `chrome://extensions`.
+4. Enable **Developer mode**.
+5. Click **Load unpacked**.
+6. Select the project folder containing `manifest.json`.
+7. If an older Easy-Fa version is already loaded, click **Reload** on its extension card.
+8. Reload already-open supported tabs once.
+9. Click the Easy-Fa toolbar icon to open the settings page.
+
+## Using Smart Font Builder
+
+1. Open Easy-Fa settings.
+2. Go to **Smart Font Builder**.
+3. Enable Smart/context-menu integration.
+4. Configure the default Smart typography settings.
+5. Open any HTTP/HTTPS page.
+6. Right-click and open **Easy-fa**.
+7. Choose **Apply font to this site** or **Apply font to this page**.
+8. When a matching Smart rule is active, **Restore font application** becomes available for that URL.
+
+## Using Custom Sites
+
+1. Open Easy-Fa settings.
+2. Go to **Custom Sites**.
+3. Add a domain such as `example.com`.
+4. Approve the requested host permission.
+5. Open that site's settings.
+6. Choose Smart or Broad detection.
+7. If needed, provide an exact CSS selector for message/content text.
+8. If needed, provide an exact CSS selector for the composer/input.
+9. Enable **Apply to typing/composer** when the editor should use Easy-Fa too.
+
+## Permissions
+
+Easy-Fa uses:
+
+- `storage` — store settings, profiles, Custom Sites, and Smart rules
+- `scripting` — register/inject content scripts for approved Custom/Smart hosts
+- `fontSettings` — discover installed system fonts where supported
+- `contextMenus` — Smart Font Builder right-click actions
+
+Built-in supported domains are declared in `host_permissions`. Other HTTP/HTTPS hosts are requested through `optional_host_permissions` only when the user applies Easy-Fa to them.
 
 ## Validate before committing
 
-From the project root:
+Run from the project root:
 
 ```bash
 node --check background.js
@@ -190,7 +341,7 @@ Easy-Fa/
 ├── manifest.json
 ├── background.js
 ├── README.md
-├── PUSH_TO_GITHUB.md
+├── CHANGELOG.md
 ├── assets/
 │   ├── fonts/
 │   └── icons/
@@ -208,8 +359,18 @@ Easy-Fa/
     └── storage.js
 ```
 
-## Version
+## 0.4.x compatibility notes
 
-- Extension manifest: **0.4.6**
-- Package label: **Easy-Fa 0.4.6 — Live Chat Restoration + Instant Apply**
-- Easy-Fa config version: **10.91**
+The 0.5.x work keeps the important behavior introduced during the 0.4.x line, including:
+
+- Restored Kick/Twitch/YouTube Live chat detection paths
+- Instant/delayed dynamic apply timing
+- Telegram/WhatsApp/Discord live-message handling
+- YouTube Shorts and dynamic caption support
+- Gemini selector updates
+- ChatGPT sidebar support
+- Dark/Light settings themes
+- Structure-safe rich Markdown handling
+- Reduced full-document rescans and incremental mutation processing
+
+For release-by-release details, see [`CHANGELOG.md`](CHANGELOG.md).

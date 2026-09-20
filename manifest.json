@@ -1,12 +1,13 @@
 {
   "manifest_version": 3,
   "name": "Easy-Fa",
-  "version": "0.4.6",
+  "version": "0.5.3",
   "description": "Persian typography, stable mixed RTL/LTR, dynamic YouTube captions, AI chat support and per-site controls.",
   "permissions": [
     "storage",
     "scripting",
-    "fontSettings"
+    "fontSettings",
+    "contextMenus"
   ],
   "optional_host_permissions": [
     "https://*/*",
@@ -31,7 +32,11 @@
     "https://chat.openai.com/*",
     "https://gemini.google.com/*",
     "https://claude.ai/*",
-    "https://www.claude.ai/*"
+    "https://www.claude.ai/*",
+    "https://google.com/*",
+    "https://www.google.com/*",
+    "https://github.com/*",
+    "https://www.github.com/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -72,7 +77,11 @@
         "https://chat.openai.com/*",
         "https://gemini.google.com/*",
         "https://claude.ai/*",
-        "https://www.claude.ai/*"
+        "https://www.claude.ai/*",
+        "https://google.com/*",
+        "https://www.google.com/*",
+        "https://github.com/*",
+        "https://www.github.com/*"
       ],
       "all_frames": true,
       "match_about_blank": true,
@@ -99,5 +108,5 @@
       ]
     }
   ],
-  "version_name": "Alpha 0.4.6 Live Chat + Instant Apply"
+  "version_name": "Alpha 0.5.3 Redesigned Settings + Global Profiles"
 }

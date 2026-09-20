@@ -23,6 +23,8 @@ const platform=()=>{
   if(h==='claude.ai'&&/^\/code(?:\/|$)/.test(path))return'claudeCode';
   if(h==='claude.ai')return'claude';
   if(h==='mail.google.com')return'gmail';
+  if(h==='google.com')return'google';
+  if(h==='github.com')return'github';
   return'custom'
 };
 const D={
@@ -103,6 +105,8 @@ const D={
    compose:['textarea[placeholder*="task" i]','textarea[placeholder*="prompt" i]','textarea[placeholder*="describe" i]','[data-testid*="composer" i] textarea','[data-testid*="composer" i] [contenteditable="true"]','[data-testid*="prompt" i] textarea','[data-testid*="prompt" i] [contenteditable="true"]','form textarea','form [contenteditable="true"][role="textbox"]','div.ProseMirror[contenteditable="true"]']
  },
  gmail:{roots:['div[role="main"]','main'],messages:['.a3s'],protect:['span[email]','[email]','time','a','button'],compose:['div[aria-label="Message Body"]','div[role="textbox"][contenteditable="true"]']},
+ google:{roots:['#main','main','#search','#rso','body'],messages:['#search h3','#search h2','#search p','#search .VwiC3b','#search .IsZvec','#search .MUxGbd','#search .hgKElc','#search .kno-rdesc','#rhs h2','#rhs h3','#rhs .kno-rdesc'],protect:['nav','form','button','input','textarea','select','option','svg','img','[role="button"]','[role="navigation"]'],compose:[]},
+ github:{roots:['main','#js-repo-pjax-container','.application-main','body'],messages:['.markdown-body','.comment-body','.js-comment-body','[data-testid="issue-body"]','[data-testid="comment-body"]','.gh-header-title .js-issue-title','.repo-description','[data-testid="issue-title"]'],protect:['pre','code','kbd','samp','.blob-code','.react-code-lines','.js-file-line','button','input','textarea','select','nav','header','[role="button"]'],compose:['textarea[name="comment[body]"]','textarea[name="issue[body]"]','textarea[aria-label*="comment" i]','textarea[placeholder*="comment" i]','[contenteditable="true"][role="textbox"]']},
  custom:{roots:['main','[role="main"]','body'],messages:[],protect:['nav','header','footer','button','time','[role="button"]'],compose:['textarea','[contenteditable="true"][role="textbox"]','[contenteditable="true"][aria-multiline="true"]']}
 };
 const AI=new Set(['chatgpt','gemini','claude','claudeCode']);
@@ -145,6 +149,19 @@ function turnMessages(r,p){
      turn nodes themselves as a last cheap fallback. */
   return pruneToContainers(many(r,d.turns||[]).filter(x=>!protectedEl(x,p)&&!x.isContentEditable&&!x.closest?.('form')))
 }
+function googleResults(r){
+  const base=r?.nodeType===1?r:(document.querySelector('#main')||document.querySelector('main')||document.body||document.documentElement),out=[];
+  let scopes=[];try{const own=base.closest?.('#search,#rhs');if(own)scopes=[base];else scopes=many(base,['#search','#rhs'])}catch{}
+  if(!scopes.length)scopes=[base];
+  const candidates=['h1','h2','h3','h4','p','span','cite','div[role="heading"]','.VwiC3b','.IsZvec','.MUxGbd','.hgKElc','.kno-rdesc'];
+  for(const scope of scopes)for(const e of many(scope,candidates)){
+    if(out.length>=850)break;if(!e||protectedEl(e,'google')||e.closest?.('#foot,#botstuff,[role="navigation"]'))continue;
+    const t=(e.textContent||'').replace(/\s+/g,' ').trim();if(!t||t.length>1200)continue;
+    if(e.tagName==='SPAN'||e.tagName==='DIV'){const childText=[...e.children].some(c=>!/^(SVG|PATH|IMG)$/i.test(c.tagName)&&(c.textContent||'').trim());if(childText)continue}
+    out.push(e)
+  }
+  return pruneToLeaves(out)
+}
 function customExplicit(r,pf){
   const exact=String(pf?.messageSelector||'').trim();
   if(exact)return many(r,[exact]).filter(x=>!protectedEl(x,'custom'));
@@ -152,6 +169,7 @@ function customExplicit(r,pf){
   return pruneToContainers(many(r,common).filter(x=>!protectedEl(x,'custom')).slice(0,300))
 }
 function explicitMessages(r,p,pf){
+  if(p==='google')return googleResults(r);
   if(p==='custom')return customExplicit(r,pf);
   const set=new Set;
   if(AI.has(p))turnMessages(r,p).forEach(x=>set.add(x));
@@ -162,6 +180,7 @@ function explicitMessages(r,p,pf){
   if(p==='twitch'&&!set.size){for(const f of many(r,D[p]?.fragments)){const el=f.closest('[data-a-target="chat-line-message"]')?f.parentElement:f;if(el&&!protectedEl(el,p))set.add(el)}}
   const filtered=[...set].filter(x=>x&&!protectedEl(x,p));
   if(p==='youtube')return pruneToLeaves(filtered);
+  if(p==='github')return pruneToContainers(filtered);
   if(['kick','twitch','telegram','whatsapp','discord','youtubeLive','gmail'].includes(p))return filtered;
   return AI.has(p)?pruneToContainers(filtered):pruneToLeaves(filtered)
 }

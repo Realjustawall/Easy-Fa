@@ -2,13 +2,13 @@
 'use strict';
 const E=globalThis.EasyFa=globalThis.EasyFa||{};
 let originals=new WeakMap(),applied=new WeakMap();
-let state=null,pid=null,current=null,observer=null,observedRoot=null,rootHostObserver=null,sidebarObserver=null,observedSidebarRoot=null,sidebarPoll=null,healthTimer=null,epoch=0,fullQueued=false,incrementalQueued=false,sidebarQueued=false,watching=false;
+let state=null,pid=null,current=null,observer=null,observedRoot=null,rootHostObserver=null,sidebarObserver=null,observedSidebarRoot=null,sidebarPoll=null,healthTimer=null,epoch=0,fullQueued=false,incrementalQueued=false,sidebarQueued=false,watching=false,lastPageUrl='';
 const pendingRoots=new Set();
 const VARS=['--easyfa-font-family','--easyfa-font-size','--easyfa-font-weight','--easyfa-line-height'];
-const RICH_PLATFORMS=new Set(['chatgpt','gemini','claude','claudeCode']);
+const RICH_PLATFORMS=new Set(['chatgpt','gemini','claude','claudeCode','github']);
 const LEGACY_PLATFORMS=new Set(['kick','twitch','telegram','whatsapp','discord','youtubeLive','gmail']);
 const LEGACY_CHILD_FONTS=new Set(['kick','twitch','telegram','whatsapp','discord','youtubeLive']);
-const TOP_ONLY_FRAMES=new Set(['chatgpt','gemini','claude','claudeCode']);
+const TOP_ONLY_FRAMES=new Set(['chatgpt','gemini','claude','claudeCode','google','github']);
 const RICH_MARKUP='h1,h2,h3,h4,h5,h6,ul,ol,li,blockquote,pre,table,hr,strong,b,em,i,code';
 const DIR_TARGETS='ul,ol,p,li,h1,h2,h3,h4,h5,h6,blockquote,figcaption,dd,dt,summary';
 const FONT_NODES='span,p,div,strong,b,em,i,u,s,blockquote,code,pre';
@@ -181,7 +181,7 @@ function onMutations(ms){
 function scheduleSidebar(){if(sidebarQueued||pid!=='chatgpt'||!current?.sidebar)return;sidebarQueued=true;const token=epoch;scheduleNowOrLater(async()=>{sidebarQueued=false;if(token!==epoch)return;await processSidebar(observedSidebarRoot||E.Detector.sidebarRoot(pid)||document,epoch)})}
 function onSidebarMutations(ms){for(const m of ms){if(m.type==='childList'&&m.addedNodes?.length){scheduleSidebar();break}}}
 function onComposerFocus(e){const p=profile();if(!p?.enabled||!p.composer)return;const el=E.Detector.closestComposer(e.target,pid,p);if(el)apply(el,p,true,epoch,'composer')}
-function onPageSignal(){scheduleFull();scheduleSidebar()}
+function onPageSignal(){const u=E.Storage.cleanPageUrl(location.href);if(lastPageUrl&&u!==lastPageUrl){void reload();return}scheduleFull();scheduleSidebar()}
 function onVisibility(){if(!document.hidden)onPageSignal()}
 function connectRootHostObserver(root){
   rootHostObserver?.disconnect();rootHostObserver=null;const host=root?.parentNode;if(!host)return;
@@ -204,6 +204,7 @@ function maintainMainObserver(){
   if(!better)return;if(!observedRoot?.isConnected||better!==observedRoot){connectObserver(better);scheduleFull()}
 }
 function healthSweep(){
+  const u=E.Storage.cleanPageUrl(location.href);if(lastPageUrl&&u!==lastPageUrl){void reload();return}
   if(!current?.enabled)return;maintainMainObserver();
   const seen=new Set,scan=scope=>{if(!scope?.isConnected)return;try{if(scope.matches?.('[data-easyfa-message="1"],[data-easyfa-composer="1"],[data-easyfa-sidebar="1"],[data-easyfa-font-node="1"]'))seen.add(scope);scope.querySelectorAll('[data-easyfa-message="1"],[data-easyfa-composer="1"],[data-easyfa-sidebar="1"],[data-easyfa-font-node="1"]').forEach(x=>seen.add(x))}catch{}};
   scan(observedRoot);scan(observedSidebarRoot);
@@ -212,17 +213,19 @@ function healthSweep(){
 }
 function stopWatch(){
   observer?.disconnect();observer=null;observedRoot=null;rootHostObserver?.disconnect();rootHostObserver=null;sidebarObserver?.disconnect();sidebarObserver=null;observedSidebarRoot=null;if(sidebarPoll){clearInterval(sidebarPoll);sidebarPoll=null}if(healthTimer){clearInterval(healthTimer);healthTimer=null}
-  if(!watching)return;watching=false;document.removeEventListener('focusin',onComposerFocus,true);document.removeEventListener('yt-navigate-finish',onPageSignal,true);document.removeEventListener('DOMContentLoaded',onPageSignal,true);document.removeEventListener('visibilitychange',onVisibility,true);removeEventListener('pageshow',onPageSignal);removeEventListener('popstate',onPageSignal);removeEventListener('hashchange',onPageSignal)
+  if(!watching)return;watching=false;document.removeEventListener('focusin',onComposerFocus,true);document.removeEventListener('yt-navigate-finish',onPageSignal,true);document.removeEventListener('turbo:load',onPageSignal,true);document.removeEventListener('turbo:render',onPageSignal,true);document.removeEventListener('DOMContentLoaded',onPageSignal,true);document.removeEventListener('visibilitychange',onVisibility,true);removeEventListener('pageshow',onPageSignal);removeEventListener('popstate',onPageSignal);removeEventListener('hashchange',onPageSignal)
 }
 function startWatch(){
-  stopWatch();if(!current?.enabled)return;connectObserver(E.Detector.root(pid));document.addEventListener('focusin',onComposerFocus,true);document.addEventListener('yt-navigate-finish',onPageSignal,true);document.addEventListener('DOMContentLoaded',onPageSignal,true);document.addEventListener('visibilitychange',onVisibility,true);addEventListener('pageshow',onPageSignal);addEventListener('popstate',onPageSignal);addEventListener('hashchange',onPageSignal);watching=true;
+  stopWatch();if(!current?.enabled)return;connectObserver(E.Detector.root(pid));document.addEventListener('focusin',onComposerFocus,true);document.addEventListener('yt-navigate-finish',onPageSignal,true);document.addEventListener('turbo:load',onPageSignal,true);document.addEventListener('turbo:render',onPageSignal,true);document.addEventListener('DOMContentLoaded',onPageSignal,true);document.addEventListener('visibilitychange',onVisibility,true);addEventListener('pageshow',onPageSignal);addEventListener('popstate',onPageSignal);addEventListener('hashchange',onPageSignal);watching=true;
   healthTimer=setInterval(healthSweep,1600);
   if(pid==='chatgpt'&&current.sidebar){maintainSidebarObserver();sidebarPoll=setInterval(maintainSidebarObserver,1800)}
 }
 async function reload(){
-  epoch++;fullQueued=false;incrementalQueued=false;sidebarQueued=false;pendingRoots.clear();stopWatch();clear();state=await E.Storage.load();pid=E.Detector.platform();
-  if(pid==='custom'){const x=E.Storage.matchCustom(state);current=x?.profile||null}else current=state.profiles?.[pid]||null;
+  epoch++;fullQueued=false;incrementalQueued=false;sidebarQueued=false;pendingRoots.clear();stopWatch();clear();state=await E.Storage.load();lastPageUrl=E.Storage.cleanPageUrl(location.href);pid=E.Detector.platform();
+  const smart=E.Storage.matchSmartPage(state,location)||E.Storage.matchSmartSite(state,location);
+  if(smart)current=smart.profile;else if(pid==='custom'){const x=E.Storage.matchCustom(state);current=x?.profile||null}else current=state.profiles?.[pid]||null;
   if(self!==top&&TOP_ONLY_FRAMES.has(pid))current=null;if(!current?.enabled)return;E.FontLoader.faceFor(current,16).catch(()=>{});startWatch();scheduleFull()
 }
-chrome.storage.onChanged.addListener((c,a)=>{if(a==='local'&&c[E.Config.KEY])reload()});reload();
+chrome.storage.onChanged.addListener((c,a)=>{if(a==='local'&&c[E.Config.KEY])reload()});
+chrome.runtime.onMessage.addListener(m=>{if(m?.type==='easyfa:reload'){reload();return Promise.resolve({ok:true})}});reload();
 })();

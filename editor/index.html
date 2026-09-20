@@ -1,20 +1,263 @@
-<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EASY-FA</title><link rel="stylesheet" href="editor.css"></head><body>
-<div class="shell">
-<header><div class="brand"><div class="logo">فا</div><div><h1>EASY-FA</h1><p class="creator">ساخته شده توسط یک دیوار</p></div></div><div class="header-actions"><button id="themeToggle" class="theme-toggle" type="button" aria-label="تغییر تم">☀️ تم روشن</button><span class="ver">v0.4.6</span></div></header>
-<nav id="sites" class="sites"></nav>
-<main>
-<section class="panel controls">
-  <div class="status"><div><b id="siteName">Kick</b><span>تنظیمات این سایت مستقل ذخیره می‌شود</span></div><label class="switch"><input id="enabled" type="checkbox"><i></i></label></div>
-  <div class="block cyan apply-speed"><div class="block-title"><b>زمان اعمال</b><span>این تنظیم روی همه سایت‌ها یکسان است</span></div><div id="applyMode" class="seg"><button data-value="instant">آنی</button><button data-value="delayed">با تأخیر</button></div><p class="hint">«آنی» پیام‌های جدید و تغییرات زنده را در همان چرخه DOM اعمال می‌کند. «با تأخیر» تغییرات پشت‌سرهم را حدود ۱۸۰ms گروه‌بندی می‌کند.</p></div>
-  <div class="block green"><div class="block-title"><b>جهت متن</b><span>روی username و badge اعمال نمی‌شود</span></div><div id="directions" class="seg"><button data-value="smart">هوشمند</button><button data-value="rtl">همیشه RTL</button><button data-value="ltr">همیشه LTR</button><button data-value="site">خود سایت</button></div></div>
-  <div id="chatgptOptions" class="block cyan" hidden><div class="block-title"><b>بخش‌های ChatGPT</b><span>کنترل مستقل برای تاریخچه گفتگو</span></div><label class="target-check"><input id="chatgptSidebar" type="checkbox"><span><b>سابقه مکالمه‌ها / Sidebar</b><small>فونت و جهت روی عنوان گفتگوهای نوار کناری اعمال شود</small></span></label></div>
-  <div id="youtubeTargets" class="block red" hidden><div class="block-title"><b>بخش‌های YouTube</b><span>انتخاب کن Easy-Fa روی کدام متن‌ها اعمال شود</span></div><div class="target-grid"><label class="target-check"><input type="checkbox" data-target="title"><span><b>تیتر ویدیو</b><small>عنوان صفحهٔ ویدیو</small></span></label><label class="target-check"><input type="checkbox" data-target="description"><span><b>توضیحات ویدیو</b><small>Description زیر ویدیو</small></span></label><label class="target-check"><input type="checkbox" data-target="comments"><span><b>کامنت‌ها</b><small>متن کامنت و پاسخ‌ها</small></span></label><label class="target-check"><input type="checkbox" data-target="home"><span><b>خانه و لیست‌ها</b><small>عنوان کارت‌ها در Home/Search/Sidebar</small></span></label><label class="target-check"><input type="checkbox" data-target="subtitles"><span><b>زیرنویس ویدیو</b><small>فونت، اندازه و جهت Captions/Subtitles روی پلیر</small></span></label></div></div>
-  <div class="block blue"><div class="block-title"><b>فونت</b><span id="fontCount"></span></div><input id="fontSearch" class="search" placeholder="جستجوی فونت‌های افزونه و سیستم…"><div id="fonts" class="font-grid"></div></div>
-  <div class="block purple"><div class="block-title"><b>محدوده اعمال</b><span>برای متن ترکیبی فارسی + English</span></div><label>فونت روی</label><div id="fontScope" class="seg"><button data-value="fa">فقط فارسی</button><button data-value="all">فارسی + English</button></div><label>اندازه و وزن روی</label><div id="sizeScope" class="seg"><button data-value="fa">فقط فارسی</button><button data-value="all">کل متن پیام</button></div></div>
-  <div class="block orange"><div class="block-title"><b>خوانایی</b><span>فقط متن پیام؛ نام کاربر دست‌نخورده</span></div><div class="range-row"><label>اندازه <output id="fontSizeOut"></output></label><input id="fontSize" type="range" min="11" max="28" step="1"></div><div class="range-row"><label>وزن</label><select id="fontWeight"><option value="400">Regular 400</option><option value="500">Medium 500</option><option value="600">SemiBold 600</option><option value="700">Bold 700</option></select></div><div class="range-row"><label>فاصله خطوط <output id="lineHeightOut"></output></label><input id="lineHeight" type="range" min="1.25" max="2.2" step="0.05"></div><label class="check"><input id="composer" type="checkbox"> روی کادر نوشتن/تایپ هم اعمال شود</label></div>
-  <div id="customAdvanced" class="block cyan" hidden><div class="block-title"><b>تشخیص پیشرفته سایت اختصاصی</b><span>برای سایت‌های ناشناخته و DOMهای خاص</span></div><label>حالت تشخیص خودکار</label><select id="customMode"><option value="smart">هوشمند — تمرکز روی متن فارسی و ساختار پیام</option><option value="all">گسترده — همه متن‌های محتوایی</option></select><label>Selector متن/پیام (اختیاری)</label><input id="customMessageSelector" class="search code-input" dir="ltr" placeholder="مثلا .message-content یا [data-testid='message']"><label>Selector کادر تایپ (اختیاری)</label><input id="customComposerSelector" class="search code-input" dir="ltr" placeholder="مثلا textarea یا div[contenteditable='true']"><p class="hint">اگر selector وارد شود، همان selector اولویت دارد و تشخیص بسیار دقیق‌تر می‌شود. تغییرات با Enter یا خروج از فیلد ذخیره می‌شوند.</p></div>
-  <div class="block cyan"><div class="block-title"><b>سایت اختصاصی</b><span>فقط دامنه‌ای که اجازه بدهی</span></div><div class="custom-form"><input id="customName" class="search" placeholder="نام اختیاری، مثلا Forum"><input id="customHost" class="search" dir="ltr" placeholder="example.com"><button id="addCustom" class="primary">افزودن سایت</button></div><div id="customList" class="custom-list"></div><p class="hint">Easy-Fa فقط برای همان دامنه از Chrome permission می‌خواهد؛ دسترسی عمومی خودکار داده نمی‌شود.</p></div>
-</section>
-<aside class="preview-wrap"><div class="preview" id="preview"><div class="preview-head"><span class="dot"></span><b>پیش‌نمایش</b></div><div class="chat-row"><div class="avatar">A</div><div class="bubble"><div class="meta"><b class="username">AlexStreamer</b><span>12:42</span></div><div id="previewFa" class="message">سلام Alex! این یک پیام فارسی است و لینک https://example.com و عدد 123 باید درست بماند 😄</div></div></div><div class="chat-row"><div class="avatar">M</div><div class="bubble"><div class="meta"><b class="username">Mike_93</b><span>12:43</span></div><div id="previewEn" class="message">This is a fully English message. Username and message order must stay LTR.</div></div></div><div class="note">در حالت «فقط فارسی»، متن لاتین فونت اصلی خودش را حفظ می‌کند.</div></div></aside>
-</main></div>
-<script src="../shared/config.js"></script><script src="../shared/storage.js"></script><script src="../shared/font-loader.js"></script><script src="editor.js"></script></body></html>
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Easy-Fa Settings</title>
+  <link rel="stylesheet" href="editor.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="app-sidebar">
+    <div class="brand-card">
+      <div class="brand-logo">فا</div>
+      <div class="brand-copy">
+        <h1>EASY-FA</h1>
+        <p>کنترل تایپوگرافی فارسی</p>
+      </div>
+    </div>
+
+    <nav class="main-nav" aria-label="بخش‌های تنظیمات">
+      <button class="nav-item active" type="button" data-view="sites">
+        <span class="nav-icon">◫</span><span><b>سایت‌ها</b><small>تنظیم جداگانه هر سرویس</small></span>
+      </button>
+      <button class="nav-item" type="button" data-view="global">
+        <span class="nav-icon">⚙</span><span><b>تنظیمات کلی</b><small>اعمال یکجا روی سایت‌ها</small></span>
+      </button>
+      <button class="nav-item" type="button" data-view="smart">
+        <span class="nav-icon">✦</span><span><b>فونت‌سازی هوشمند</b><small>منوی راست‌کلیک Easy-fa</small></span>
+      </button>
+      <button class="nav-item" type="button" data-view="custom">
+        <span class="nav-icon">＋</span><span><b>سایت‌های اختصاصی</b><small>دامنه‌های دلخواه شما</small></span>
+      </button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <button id="themeToggle" class="ghost-btn" type="button" aria-label="تغییر تم">☀️ تم روشن</button>
+      <div class="version-chip">v0.5.3</div>
+    </div>
+  </aside>
+
+  <main class="workspace">
+    <header class="topbar">
+      <div class="topbar-copy">
+        <span class="eyebrow">EASY-FA CONTROL CENTER</span>
+        <h2 id="viewTitle">تنظیمات سایت‌ها</h2>
+        <p id="viewSubtitle">برای هر سرویس فونت، جهت و خوانایی را مستقل تنظیم کن.</p>
+      </div>
+      <div id="saveState" class="save-state" aria-live="polite"><i></i><span>همه تغییرات خودکار ذخیره می‌شوند</span></div>
+    </header>
+
+    <section id="sitesView" class="view active" data-view-panel="sites">
+      <div class="sites-workbench">
+        <aside class="site-picker-card" aria-label="انتخاب سایت">
+          <div class="site-rail-head">
+            <div><span class="kicker">SERVICES</span><h3>سایت‌ها</h3></div>
+            <span class="rail-badge">مستقل</span>
+          </div>
+          <p class="site-rail-hint">هر سایت پروفایل فونت و خوانایی خودش را دارد.</p>
+          <nav id="sites" class="site-tabs" aria-label="سایت‌های پشتیبانی‌شده"></nav>
+          <div class="site-rail-footnote"><span class="rail-pulse"></span><span>تغییرات همان لحظه ذخیره می‌شوند</span></div>
+        </aside>
+
+        <div class="site-stage">
+          <div class="site-layout">
+        <div class="settings-column">
+          <section class="hero-control card">
+            <div class="status-copy">
+              <span class="kicker">سایت انتخاب‌شده</span>
+              <h3 id="siteName">Kick</h3>
+              <p id="siteDescription">Easy-Fa را برای این سایت روشن یا خاموش کن.</p>
+            </div>
+            <label class="switch large"><input id="enabled" type="checkbox"><i></i></label>
+          </section>
+
+          <section class="card tone-green">
+            <div class="section-heading"><div><span class="kicker">Direction</span><h3>جهت متن</h3></div><span class="soft-note">نام کاربر و badge دست‌نخورده می‌ماند</span></div>
+            <div id="directions" class="segmented four"><button data-value="smart">هوشمند</button><button data-value="rtl">همیشه RTL</button><button data-value="ltr">همیشه LTR</button><button data-value="site">خود سایت</button></div>
+          </section>
+
+          <section id="chatgptOptions" class="card tone-cyan" hidden>
+            <div class="section-heading"><div><span class="kicker">ChatGPT</span><h3>بخش‌های ChatGPT</h3></div><span class="soft-note">کنترل مستقل تاریخچه گفتگو</span></div>
+            <label class="choice-card"><input id="chatgptSidebar" type="checkbox"><span><b>سابقه مکالمه‌ها / Sidebar</b><small>فونت و جهت روی عنوان گفتگوهای نوار کناری اعمال شود</small></span></label>
+          </section>
+
+          <section id="youtubeTargets" class="card tone-red" hidden>
+            <div class="section-heading"><div><span class="kicker">YouTube</span><h3>بخش‌های YouTube</h3></div><span class="soft-note">انتخاب محل اعمال Easy-Fa</span></div>
+            <div class="choice-grid">
+              <label class="choice-card"><input type="checkbox" data-target="title"><span><b>تیتر ویدیو</b><small>عنوان صفحهٔ ویدیو</small></span></label>
+              <label class="choice-card"><input type="checkbox" data-target="description"><span><b>توضیحات ویدیو</b><small>Description زیر ویدیو</small></span></label>
+              <label class="choice-card"><input type="checkbox" data-target="comments"><span><b>کامنت‌ها</b><small>متن کامنت و پاسخ‌ها</small></span></label>
+              <label class="choice-card"><input type="checkbox" data-target="home"><span><b>خانه و لیست‌ها</b><small>عنوان کارت‌ها در Home / Search</small></span></label>
+              <label class="choice-card"><input type="checkbox" data-target="subtitles"><span><b>زیرنویس ویدیو</b><small>Captions / Subtitles روی پلیر</small></span></label>
+            </div>
+          </section>
+
+          <section class="card tone-blue">
+            <div class="section-heading"><div><span class="kicker">Typography</span><h3>فونت</h3></div><span id="fontCount" class="counter-chip"></span></div>
+            <div class="search-wrap"><span>⌕</span><input id="fontSearch" class="field" placeholder="جستجوی فونت‌های افزونه و سیستم…"></div>
+            <div id="fonts" class="font-grid"></div>
+          </section>
+
+          <section class="card tone-purple">
+            <div class="section-heading"><div><span class="kicker">Scope</span><h3>محدوده اعمال</h3></div><span class="soft-note">برای متن ترکیبی فارسی + English</span></div>
+            <div class="form-split">
+              <div class="field-group"><label>فونت روی</label><div id="fontScope" class="segmented"><button data-value="fa">فقط فارسی</button><button data-value="all">فارسی + English</button></div></div>
+              <div class="field-group"><label>اندازه و وزن روی</label><div id="sizeScope" class="segmented"><button data-value="fa">فقط فارسی</button><button data-value="all">کل متن پیام</button></div></div>
+            </div>
+          </section>
+
+          <section class="card tone-orange">
+            <div class="section-heading"><div><span class="kicker">Readability</span><h3>خوانایی</h3></div><span class="soft-note">فقط متن پیام</span></div>
+            <div class="control-grid">
+              <div class="field-group"><div class="label-line"><label>اندازه</label><output id="fontSizeOut"></output></div><input id="fontSize" type="range" min="11" max="28" step="1"></div>
+              <div class="field-group"><label for="fontWeight">وزن</label><select id="fontWeight" class="field"><option value="400">Regular 400</option><option value="500">Medium 500</option><option value="600">SemiBold 600</option><option value="700">Bold 700</option></select></div>
+              <div class="field-group"><div class="label-line"><label>فاصله خطوط</label><output id="lineHeightOut"></output></div><input id="lineHeight" type="range" min="1.25" max="2.2" step="0.05"></div>
+            </div>
+            <label class="inline-check"><input id="composer" type="checkbox"><span>روی کادر نوشتن/تایپ هم اعمال شود</span></label>
+          </section>
+
+          <section id="customAdvanced" class="card tone-cyan" hidden>
+            <div class="section-heading"><div><span class="kicker">Advanced</span><h3>تشخیص پیشرفته سایت اختصاصی</h3></div><span class="soft-note">برای DOMهای خاص</span></div>
+            <div class="form-grid two">
+              <div class="field-group"><label for="customMode">حالت تشخیص خودکار</label><select id="customMode" class="field"><option value="smart">هوشمند — تمرکز روی متن فارسی و ساختار پیام</option><option value="all">گسترده — همه متن‌های محتوایی</option></select></div>
+              <div></div>
+              <div class="field-group"><label for="customMessageSelector">Selector متن/پیام</label><input id="customMessageSelector" class="field code-input" dir="ltr" placeholder=".message-content"></div>
+              <div class="field-group"><label for="customComposerSelector">Selector کادر تایپ</label><input id="customComposerSelector" class="field code-input" dir="ltr" placeholder="textarea یا [contenteditable='true']"></div>
+            </div>
+            <p class="helper">اگر selector وارد شود همان selector اولویت دارد. تغییرات با Enter یا خروج از فیلد ذخیره می‌شوند.</p>
+          </section>
+        </div>
+
+        <aside class="preview-column">
+          <div class="preview card" id="preview">
+            <div class="preview-head"><div><span class="kicker">Live Preview</span><h3>پیش‌نمایش زنده</h3></div><span class="live-dot"></span></div>
+            <div class="chat-row"><div class="avatar">A</div><div class="bubble"><div class="meta"><b class="username">AlexStreamer</b><span>12:42</span></div><div id="previewFa" class="message">سلام Alex! این یک پیام فارسی است و لینک https://example.com و عدد 123 باید درست بماند 😄</div></div></div>
+            <div class="chat-row"><div class="avatar">M</div><div class="bubble"><div class="meta"><b class="username">Mike_93</b><span>12:43</span></div><div id="previewEn" class="message">This is a fully English message. Username and message order must stay LTR.</div></div></div>
+            <div class="preview-note">در حالت «فقط فارسی»، متن لاتین فونت اصلی خودش را حفظ می‌کند.</div>
+          </div>
+        </aside>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="globalView" class="view" data-view-panel="global">
+      <div class="view-grid wide-main">
+        <div class="settings-column">
+          <section class="card feature-card tone-violet">
+            <div class="feature-icon">⚙</div>
+            <div><span class="kicker">Global Preset</span><h3>تنظیمات کلی Easy-Fa</h3><p>یک پروفایل مرکزی بساز و هر زمان خواستی آن را روی سایت‌های انتخابی اعمال کن. تنظیمات اختصاصی YouTube/ChatGPT و selectorهای سفارشی حذف نمی‌شوند.</p></div>
+          </section>
+
+          <section class="card">
+            <div class="section-heading"><div><span class="kicker">Performance</span><h3>زمان اعمال</h3></div><span class="soft-note">این گزینه همین حالا روی همه سایت‌ها مشترک است</span></div>
+            <div id="applyMode" class="segmented"><button data-value="instant">آنی</button><button data-value="delayed">با تأخیر</button></div>
+            <p class="helper">«آنی» تغییرات زنده را همان چرخه DOM اعمال می‌کند. «با تأخیر» تغییرات پشت‌سرهم را حدود ۱۸۰ms گروه‌بندی می‌کند.</p>
+          </section>
+
+          <section class="card tone-violet">
+            <div class="section-heading"><div><span class="kicker">Defaults</span><h3>پروفایل تنظیمات کلی</h3></div><span class="soft-note">تغییر این بخش تا زدن دکمه اعمال، سایت‌های موجود را تغییر نمی‌دهد</span></div>
+            <div class="form-grid three">
+              <div class="field-group"><label for="globalFont">فونت</label><select id="globalFont" class="field"></select></div>
+              <div class="field-group"><label for="globalDirection">جهت متن</label><select id="globalDirection" class="field"><option value="smart">هوشمند</option><option value="rtl">همیشه RTL</option><option value="ltr">همیشه LTR</option><option value="site">خود سایت</option></select></div>
+              <div class="field-group"><label for="globalFontScope">محدوده فونت</label><select id="globalFontScope" class="field"><option value="fa">فقط فارسی</option><option value="all">فارسی + English</option></select></div>
+              <div class="field-group"><label for="globalSizeScope">محدوده اندازه/وزن</label><select id="globalSizeScope" class="field"><option value="fa">فقط فارسی</option><option value="all">کل متن</option></select></div>
+              <div class="field-group"><div class="label-line"><label>اندازه</label><output id="globalFontSizeOut"></output></div><input id="globalFontSize" type="range" min="11" max="28" step="1"></div>
+              <div class="field-group"><label for="globalWeight">وزن</label><select id="globalWeight" class="field"><option value="400">Regular 400</option><option value="500">Medium 500</option><option value="600">SemiBold 600</option><option value="700">Bold 700</option></select></div>
+              <div class="field-group"><div class="label-line"><label>فاصله خطوط</label><output id="globalLineHeightOut"></output></div><input id="globalLineHeight" type="range" min="1.25" max="2.2" step="0.05"></div>
+              <label class="choice-card compact-choice"><input id="globalComposer" type="checkbox"><span><b>کادر تایپ</b><small>روی composer نیز اعمال شود</small></span></label>
+            </div>
+          </section>
+
+          <section class="card apply-card">
+            <div class="section-heading"><div><span class="kicker">Apply</span><h3>اعمال تنظیمات کلی</h3></div><span class="soft-note">انتخاب کن کدام گروه‌ها به‌روزرسانی شوند</span></div>
+            <div class="apply-targets">
+              <label class="choice-card"><input id="applyBuiltin" type="checkbox" checked><span><b>سایت‌های اصلی</b><small>Google، GitHub، YouTube، ChatGPT و بقیه سرویس‌های داخلی</small></span></label>
+              <label class="choice-card"><input id="applyCustom" type="checkbox" checked><span><b>سایت‌های اختصاصی</b><small>دامنه‌هایی که خودت اضافه کرده‌ای</small></span></label>
+              <label class="choice-card"><input id="applySmart" type="checkbox" checked><span><b>Ruleهای هوشمند</b><small>پیش‌فرض و سایت/صفحه‌های فعال‌شده از راست‌کلیک</small></span></label>
+            </div>
+            <div class="action-row"><button id="applyGlobalSettings" class="primary-btn" type="button">اعمال تنظیمات کلی</button><span id="globalApplyResult" class="action-result"></span></div>
+          </section>
+        </div>
+
+        <aside class="info-column">
+          <section class="card mini-stat-card"><span class="stat-icon">◎</span><div><b id="builtinCount">0</b><small>سایت اصلی</small></div></section>
+          <section class="card mini-stat-card"><span class="stat-icon">＋</span><div><b id="customCount">0</b><small>سایت اختصاصی</small></div></section>
+          <section class="card mini-stat-card"><span class="stat-icon">✦</span><div><b id="smartCount">0</b><small>Rule هوشمند</small></div></section>
+          <section class="card tip-card"><span class="kicker">نکته</span><h3>اعمال امن</h3><p>اعمال تنظیمات کلی فقط گزینه‌های مشترک فونت و خوانایی را تغییر می‌دهد؛ تنظیمات اختصاصی هر سرویس سر جای خودش می‌ماند.</p></section>
+        </aside>
+      </div>
+    </section>
+
+    <section id="smartView" class="view" data-view-panel="smart">
+      <div class="settings-column full-width">
+        <section class="card feature-card tone-cyan">
+          <div class="feature-icon">✦</div>
+          <div class="feature-copy"><span class="kicker">Smart Context Rules</span><h3>فونت‌سازی هوشمند</h3><p>وقتی روشن باشد، با راست‌کلیک روی هر صفحه منوی Easy-fa نمایش داده می‌شود و می‌توانی فونت را فقط برای همان سایت یا همان URL فعال کنی.</p></div>
+          <label class="switch large"><input id="smartEnabled" type="checkbox"><i></i></label>
+        </section>
+
+        <div class="smart-layout">
+          <section class="card tone-cyan">
+            <div class="section-heading"><div><span class="kicker">Context Menu</span><h3>منوی راست‌کلیک Easy-fa</h3></div><span id="smartMenuStatus" class="status-pill"></span></div>
+            <div class="menu-preview">
+              <div class="menu-title">Easy-fa</div>
+              <div>اعمال فونت به این سایت</div>
+              <div>اعمال فونت به این صفحه</div>
+              <div class="danger-text conditional-menu-item"><span>بازگردانی اعمال فونت</span><small>فقط اگر روی این آدرس فعال باشد</small></div>
+            </div>
+            <p class="helper">روشن/خاموش شدن منو فقط از همین بخش کنترل می‌شود.</p>
+          </section>
+
+          <section class="card tone-cyan">
+            <div class="section-heading"><div><span class="kicker">New Rules</span><h3>تنظیمات پیش‌فرض سایت‌های جدید</h3></div><button id="copyGlobalToSmart" class="secondary-btn" type="button">کپی از تنظیمات کلی</button></div>
+            <div class="form-grid three">
+              <div class="field-group"><label for="smartDefaultFont">فونت پیش‌فرض</label><select id="smartDefaultFont" class="field"></select></div>
+              <div class="field-group"><label for="smartDefaultDirection">جهت پیش‌فرض</label><select id="smartDefaultDirection" class="field"><option value="smart">هوشمند</option><option value="rtl">همیشه RTL</option><option value="ltr">همیشه LTR</option><option value="site">خود سایت</option></select></div>
+              <div class="field-group"><label for="smartDefaultFontScope">محدوده فونت</label><select id="smartDefaultFontScope" class="field"><option value="fa">فقط فارسی</option><option value="all">فارسی + English</option></select></div>
+              <div class="field-group"><label for="smartDefaultSizeScope">محدوده اندازه/وزن</label><select id="smartDefaultSizeScope" class="field"><option value="fa">فقط فارسی</option><option value="all">کل متن</option></select></div>
+              <div class="field-group"><div class="label-line"><label>اندازه پیش‌فرض</label><output id="smartDefaultFontSizeOut"></output></div><input id="smartDefaultFontSize" type="range" min="11" max="28" step="1"></div>
+              <div class="field-group"><label for="smartDefaultWeight">وزن پیش‌فرض</label><select id="smartDefaultWeight" class="field"><option value="400">Regular 400</option><option value="500">Medium 500</option><option value="600">SemiBold 600</option><option value="700">Bold 700</option></select></div>
+              <div class="field-group"><div class="label-line"><label>فاصله خطوط</label><output id="smartDefaultLineHeightOut"></output></div><input id="smartDefaultLineHeight" type="range" min="1.25" max="2.2" step="0.05"></div>
+              <label class="choice-card compact-choice"><input id="smartDefaultComposer" type="checkbox"><span><b>کادر تایپ</b><small>برای Rule جدید</small></span></label>
+            </div>
+            <div class="action-row split-action"><span class="helper no-margin">Ruleهای جدید یک Snapshot از این تنظیمات می‌گیرند.</span><button id="applySmartDefaultsExisting" class="secondary-btn" type="button">اعمال روی Ruleهای فعال</button></div>
+          </section>
+        </div>
+
+        <section class="card">
+          <div class="section-heading"><div><span class="kicker">Active Rules</span><h3>سایت‌ها و صفحه‌های فعال</h3></div><span id="smartRuleCount" class="counter-chip"></span></div>
+          <div class="inline-add"><div class="search-wrap grow"><span>⌕</span><input id="smartHost" class="field" dir="ltr" placeholder="example.com"></div><button id="addSmartSite" class="primary-btn" type="button">افزودن سایت</button></div>
+          <div id="smartActiveList" class="rule-list"></div>
+        </section>
+      </div>
+    </section>
+
+    <section id="customView" class="view" data-view-panel="custom">
+      <div class="custom-layout">
+        <section class="card tone-cyan add-custom-card">
+          <div class="section-heading"><div><span class="kicker">Custom Domain</span><h3>افزودن سایت اختصاصی</h3></div><span class="soft-note">فقط همان دامنه مجوز می‌گیرد</span></div>
+          <div class="form-grid two">
+            <div class="field-group"><label for="customName">نام نمایشی</label><input id="customName" class="field" placeholder="مثلاً Forum"></div>
+            <div class="field-group"><label for="customHost">دامنه</label><input id="customHost" class="field" dir="ltr" placeholder="example.com"></div>
+          </div>
+          <button id="addCustom" class="primary-btn full-btn" type="button">افزودن سایت اختصاصی</button>
+          <p class="helper">Easy-Fa برای دامنه‌های اختصاصی فقط هنگام افزودن، مجوز همان دامنه را از مرورگر درخواست می‌کند.</p>
+        </section>
+
+        <section class="card custom-list-card">
+          <div class="section-heading"><div><span class="kicker">Your Sites</span><h3>سایت‌های اختصاصی</h3></div><span id="customListCount" class="counter-chip"></span></div>
+          <div id="customList" class="custom-site-list"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="../shared/config.js"></script>
+<script src="../shared/storage.js"></script>
+<script src="../shared/font-loader.js"></script>
+<script src="editor.js"></script>
+</body>
+</html>

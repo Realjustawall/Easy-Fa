@@ -13,7 +13,9 @@ const platforms={
   gemini:{name:'Gemini',accent:'#4e82ee'},
   claude:{name:'Claude Chat',accent:'#d97757'},
   claudeCode:{name:'Claude Code',accent:'#d97757'},
-  gmail:{name:'Gmail',accent:'#ea4335'}
+  gmail:{name:'Gmail',accent:'#ea4335'},
+  google:{name:'Google Search',accent:'#4285f4'},
+  github:{name:'GitHub',accent:'#8b949e'}
 };
 const remote=(id,name,family,base,regular,bold=regular)=>({id,name,family,remote:true,recommended:true,files:{400:base+regular,700:base+bold}});
 const fonts=[
@@ -46,7 +48,7 @@ const base=p=>({
   enabled:true,
   direction:'smart',
   fontId:'vazirmatn',
-  fontScope:'fa',
+  fontScope:p==='google'?'all':'fa',
   sizeScope:'fa',
   fontSize:16,
   fontWeight:500,
@@ -59,9 +61,9 @@ const base=p=>({
 });
 E.Config=Object.freeze({
   KEY:'easyFaV10',
-  VERSION:10.91,
+  VERSION:12.0,
   ARABIC_RANGE:'U+0600-06FF,U+0750-077F,U+0870-089F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFF',
   platforms,fonts,base,youtubeTargets,
-  defaults:{version:10.91,theme:'dark',applyMode:'instant',active:'kick',profiles:Object.fromEntries(Object.keys(platforms).map(p=>[p,base(p)])),customSites:[]}
+  defaults:{version:12.0,theme:'dark',applyMode:'instant',active:'kick',globalDefaults:base('custom'),profiles:Object.fromEntries(Object.keys(platforms).map(p=>[p,base(p)])),customSites:[],smart:{enabled:false,defaults:base('custom'),sites:[],pages:[]}}
 });
 })();
