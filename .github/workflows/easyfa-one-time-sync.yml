@@ -1,0 +1,53 @@
+name: Easy-Fa one-time 0.5.3 sync
+
+on:
+  push:
+    branches:
+      - easyfa-upload-053
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout staging upload branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Rebuild source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .easyfa-upload/part-* > /tmp/easyfa.b64
+          base64 -d /tmp/easyfa.b64 > /tmp/easyfa.tar.gz
+          tar -tzf /tmp/easyfa.tar.gz >/dev/null
+
+      - name: Apply and validate Easy-Fa 0.5.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git checkout -B main origin/main
+          tar -xzf /tmp/easyfa.tar.gz -C .
+
+          node --check background.js
+          node --check shared/config.js
+          node --check shared/storage.js
+          node --check shared/font-loader.js
+          node --check content/detector.js
+          node --check content/content.js
+          node --check editor/editor.js
+          python3 -m json.tool manifest.json >/dev/null
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manifest.json background.js README.md CHANGELOG.md content editor shared
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "Sync Easy-Fa 0.5.3: Google, GitHub, Smart rules and UI"
+          git push origin HEAD:main
