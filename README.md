@@ -2,7 +2,7 @@
 
 Easy-Fa is a Chrome Manifest V3 extension for Persian typography, safe mixed RTL/LTR rendering, per-site font controls, composer styling, and user-defined Custom Sites.
 
-**Created by Yek Divar (یک دیوار).**
+**Created by JustAWall**
 
 ## Version 0.4.6
 
