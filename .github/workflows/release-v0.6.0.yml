@@ -1,0 +1,39 @@
+name: Publish Easy-Fa v0.6.0
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/release-v0.6.0.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate extension and version
+        run: |
+          node --check background.js
+          for f in shared/*.js content/*.js editor/*.js; do node --check "$f"; done
+          python - <<'PY'
+          import json,pathlib
+          m=json.loads(pathlib.Path('manifest.json').read_text())
+          assert m['version']=='0.6.0'
+          cs=m['content_scripts'][0]
+          for p in cs['js']+cs['css']:
+              assert pathlib.Path(p).is_file(),p
+          PY
+      - name: Package extension
+        run: |
+          zip -q -r Easy-Fa-0.6.0.zip assets content editor shared background.js manifest.json README.md Policy-WebC -x '*.DS_Store' '*/__pycache__/*'
+          unzip -t Easy-Fa-0.6.0.zip | tail -n 1
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create v0.6.0 Easy-Fa-0.6.0.zip \
+            --target "$GITHUB_SHA" \
+            --title 'Easy-Fa 0.6.0' \
+            --notes 'Adds direct ChatGPT conversation typography support for updated message DOM, offline font fallback, and version-aware CI packaging. Other site support is preserved. Live site compatibility has not been verified.' \
+            --latest
