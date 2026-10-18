@@ -1,0 +1,16 @@
+/* Easy-Fa: independent ChatGPT text font support for October 2026 DOM. */
+(()=>{'use strict';
+if(!/^(?:www\.)?chatgpt\.com$|^chat\.openai\.com$/i.test(location.hostname)||window.top!==window)return;
+const E=globalThis.EasyFa,KEY=E?.Config?.KEY||'easyFaV10';
+const TARGET='[data-markdown-text-style="assistant-message"] p,[data-markdown-text-style="assistant-message"] li,[data-markdown-text-style="assistant-message"] [data-d-text-flow],[data-markdown-text-style="assistant-message"] [data-d-component="text"],[data-dil-message-id] p,[data-dil-message-id] [data-d-component="text"],[data-user-message-bubble="true"] .whitespace-pre-wrap,[data-message-author-role="assistant"] .markdown p,[data-message-author-role="assistant"] .markdown li,[data-message-author-role="user"] .whitespace-pre-wrap,#prompt-textarea,#prompt-textarea p,[data-composer-markdown][contenteditable="true"],[data-composer-markdown][contenteditable="true"] p';
+const SKIP='pre,code,kbd,samp,.katex,.MathJax,[data-d-component="code"],svg,[aria-hidden="true"]';
+let changed=new Map(),profile,face,scheduled=false,sequence=0;
+function installFace(){if(document.getElementById('easyfa-chatgpt-local-face'))return;const s=document.createElement('style');s.id='easyfa-chatgpt-local-face';s.textContent='@font-face{font-family:"EasyFaOffline";src:url("'+chrome.runtime.getURL('assets/fonts/NotoSansArabic-Regular.woff2')+'") format("woff2");font-display:swap}';(document.head||document.documentElement).append(s)}
+function set(el,f){if(el.closest(SKIP)||el.closest('button,nav,aside,[role="navigation"]'))return;if(!changed.has(el))changed.set(el,[el.style.getPropertyValue('font-family'),el.style.getPropertyPriority('font-family')]);el.style.setProperty('font-family',f,'important')}
+function reset(){for(const [el,old] of changed){if(old[0])el.style.setProperty('font-family',old[0],old[1]);else el.style.removeProperty('font-family')}changed.clear()}
+function scan(){scheduled=false;if(!profile?.enabled||!face)return;const f=face+', "EasyFaOffline", Tahoma, Arial, sans-serif';document.querySelectorAll(TARGET).forEach(el=>{set(el,f);if(el.matches('[data-d-text-flow],[data-d-component="text"],[data-user-message-bubble="true"] .whitespace-pre-wrap'))el.querySelectorAll('span,strong,b,em,i,a').forEach(n=>set(n,f))});for(const el of changed.keys())if(!el.isConnected)changed.delete(el)}
+function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(scan)}
+async function load(){const id=++sequence;reset();let st;try{st=await E.Storage.load()}catch{return}if(id!==sequence)return;const smart=E.Storage.matchSmartPage(st,location)||E.Storage.matchSmartSite(st,location);profile=smart?.profile||st.profiles?.chatgpt||E.Config.base('chatgpt');if(!profile.enabled){face=null;return}installFace();face='"EasyFaOffline"';schedule();try{const v=await E.FontLoader.faceFor(profile,16);if(id!==sequence)return;const chosen=profile.fontScope==='all'?v.family:v.faFamily;if(chosen)face=chosen;schedule()}catch{}}
+new MutationObserver(list=>{if(list.some(x=>x.type==='childList'))schedule()}).observe(document,{childList:true,subtree:true});
+chrome.storage.onChanged.addListener((changes,area)=>{if(area==='local'&&changes[KEY])void load()});void load();
+})();
