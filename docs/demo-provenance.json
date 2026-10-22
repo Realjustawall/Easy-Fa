@@ -1,0 +1,23 @@
+{
+  "source_commit": "8037201c696cb5afd9cc461629b4756fd5d12771",
+  "captures": [
+    {
+      "path": "docs/assets/screenshots/fa/01-sites-ui-harness.webp",
+      "language": "fa",
+      "capture_method": "Original extension UI with in-memory Chrome API test adapter; extension integration not executed",
+      "source_png_sha256": "0094e0afa33dc40e6c9cba5811dbd39bd641f025524ef351a0ae67dd736acc73"
+    },
+    {
+      "path": "docs/assets/screenshots/fa/02-global-ui-harness.webp",
+      "language": "fa",
+      "capture_method": "Original extension UI with in-memory Chrome API test adapter; extension integration not executed",
+      "source_png_sha256": "45d8deae382288fb4a0383cbb72b12cb7e0214a805d9b85a183f1ff215fefb27"
+    },
+    {
+      "path": "docs/assets/screenshots/fa/03-smart-ui-harness.webp",
+      "language": "fa",
+      "capture_method": "Original extension UI with in-memory Chrome API test adapter; extension integration not executed",
+      "source_png_sha256": "bc5a9811ecf4e491b2b22188cb1b4e0c2e7a3cec896a01248244f66bbde68f2d"
+    }
+  ]
+}
