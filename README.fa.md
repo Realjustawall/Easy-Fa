@@ -8,10 +8,10 @@
 <img alt="Platform" src="https://img.shields.io/badge/platform-Chromium%20browsers-354158?style=flat-square" />
 <a href="https://github.com/Realjustawall/Easy-Fa/actions/workflows/extension-ci.yml"><img alt="CI status" src="https://img.shields.io/github/actions/workflow/status/Realjustawall/Easy-Fa/extension-ci.yml?branch=main&amp;label=CI&amp;style=flat-square" /></a>
 
-<a href="https://github.com/Realjustawall/Easy-Fa/releases/latest"><img src="https://img.shields.io/badge/%D8%AF%D8%B1%DB%8C%D8%A7%D9%81%D8%AA-64e739?style=flat-square&labelColor=161b22" alt="دریافت" /></a>
-<a href="docs/gallery.fa.md"><img src="https://img.shields.io/badge/%DA%AF%D8%A7%D9%84%D8%B1%DB%8C%20%D8%AF%D9%85%D9%88-5968c3?style=flat-square&labelColor=161b22" alt="گالری دمو" /></a>
-<a href="#quick-start"><img src="https://img.shields.io/badge/%D8%B1%D8%A7%D9%87%E2%80%8C%D8%A7%D9%86%D8%AF%D8%A7%D8%B2%DB%8C-354158?style=flat-square&labelColor=161b22" alt="راه‌اندازی" /></a>
-<a href="https://github.com/Realjustawall/Easy-Fa/issues"><img src="https://img.shields.io/badge/%DA%AF%D8%B2%D8%A7%D8%B1%D8%B4%20%D9%85%D8%B4%DA%A9%D9%84-354158?style=flat-square&labelColor=161b22" alt="گزارش مشکل" /></a>
+<a href="https://github.com/Realjustawall/Easy-Fa/releases/latest"><img src="docs/assets/buttons/download-fa.svg" alt="دریافت نسخه" width="220" height="72" /></a>
+<a href="docs/gallery.fa.md"><img src="docs/assets/buttons/demo-fa.svg" alt="مشاهدهٔ دمو" width="220" height="72" /></a>
+<a href="#quick-start"><img src="docs/assets/buttons/start-fa.svg" alt="راه‌اندازی" width="220" height="72" /></a>
+<a href="https://github.com/Realjustawall/Easy-Fa/issues"><img src="docs/assets/buttons/issues-fa.svg" alt="گزارش اشکال" width="220" height="72" /></a>
 
 [English](README.md) · [فارسی](README.fa.md)
 
